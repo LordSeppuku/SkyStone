@@ -6,7 +6,9 @@ interface Command {
 
     fun init()
 
+    fun run()
 
+    fun stop()
 
 }
 
