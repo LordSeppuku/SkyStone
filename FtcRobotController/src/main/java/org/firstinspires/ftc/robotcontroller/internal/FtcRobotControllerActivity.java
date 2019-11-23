@@ -138,6 +138,7 @@ public class FtcRobotControllerActivity extends Activity
 
   protected UpdateUI.Callback callback;
   protected Context context;
+
   protected Utility utility;
   protected StartResult prefRemoterStartResult = new StartResult();
   protected StartResult deviceNameStartResult = new StartResult();
@@ -380,6 +381,7 @@ public class FtcRobotControllerActivity extends Activity
     if (preferencesHelper.readBoolean(getString(R.string.pref_wifi_automute), false)) {
       initWifiMute(true);
     }
+
   }
 
   protected UpdateUI createUpdateUI() {

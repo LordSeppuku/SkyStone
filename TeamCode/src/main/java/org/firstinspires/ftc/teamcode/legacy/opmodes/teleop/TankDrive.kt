@@ -1,19 +1,19 @@
-package org.firstinspires.ftc.teamcode.opmodes.bad.teleop
+package org.firstinspires.ftc.teamcode.legacy.opmodes.teleop
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.util.ElapsedTime
-import org.firstinspires.ftc.teamcode.badlib.MecanumDrivetrain
+import org.firstinspires.ftc.teamcode.legacy.subsystems.MecanumDrivetrain
 
 @TeleOp(name = "Tank Drive", group = "bad")
 class TankDrive: LinearOpMode() {
 
-    val drivetrain: MecanumDrivetrain = MecanumDrivetrain(hardwareMap)
+    val drivetrain: MecanumDrivetrain = MecanumDrivetrain()
     val runtime: ElapsedTime = ElapsedTime()
 
     override fun runOpMode() {
 
-        drivetrain.init()
+        drivetrain.init(hardwareMap)
 
         waitForStart()
 

@@ -1,11 +1,8 @@
-package org.firstinspires.ftc.teamcode.badlib
+package org.firstinspires.ftc.teamcode.legacy.lib
 
-class Button() {
+class Button {
 
     var state: ButtonState = ButtonState.NOT_PRESSED
-        private set(value) {
-            state = value
-        }
 
     fun update(value: Boolean): ButtonState {
         state = state.update(button = value)
@@ -21,8 +18,8 @@ enum class ButtonState {
     fun update(button: Boolean): ButtonState {
         if(button) when(this) {
             NOT_PRESSED -> return PRESSED
-            PRESSED -> HELD
-            HELD -> HELD
+            PRESSED -> return HELD
+            HELD -> return HELD
         }
 
         return NOT_PRESSED
