@@ -1,13 +1,9 @@
 package org.firstinspires.ftc.teamcode.legacy.opmodes.config
 
-import android.app.Activity
-import com.beust.klaxon.Klaxon
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
-import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity
+import org.firstinspires.ftc.teamcode.legacy.lib.AutoDriveCommand
 import java.io.File
-import java.nio.file.Files
-import java.nio.file.Path
 
 @TeleOp(name = "Create/Modify AutoOP", group = "Configuration")
 class AutonomousCreator: LinearOpMode() {
@@ -19,13 +15,13 @@ class AutonomousCreator: LinearOpMode() {
                 For this application, 
                 you will only need to use the D-pad
                 buttons, the "A" button, and the "B" button.
-                
+                ============================================
                 PRESS "A" TO CONTINUE
+                PRESS "B" TO EXIT
             """.trimIndent(),
             """
                 What do YOU want to do today?
-                PRESS THE RESPECTIVE BUTTON
-                
+                =============================
                 UP: Create new Autonomous
                 DOWN: Modify existing Autonomous
             """.trimIndent()
@@ -35,7 +31,7 @@ class AutonomousCreator: LinearOpMode() {
             """
                 YOU HAVE SELECTED
                 Create new Autonomous
-               
+                =====================
                 PRESS "A" TO CONTINUE
                 PRESS "B" TO RETURN
             """.trimIndent(),
@@ -48,7 +44,7 @@ class AutonomousCreator: LinearOpMode() {
             """
                 YOU HAVE SELECTED
                 Modify existing Autonomous
-               
+                ==========================
                 PRESS "A" TO CONTINUE
                 PRESS "B" TO RETURN
             """.trimIndent()
@@ -60,9 +56,9 @@ class AutonomousCreator: LinearOpMode() {
 
     override fun runOpMode() {
         val files: MutableList<File> = mutableListOf()
-        var wizardState: State = State.INTRO
+        var wizardState: ConfigState = Intro()
 
-        File("/FIRST/legacy/customauto/").walkTopDown().forEach {
+        File(hardwareMap.appContext.filesDir.path).walkTopDown().forEach {
             if (it.name.endsWith("created.json")) {
                 files.add(it)
             }
@@ -76,15 +72,29 @@ class AutonomousCreator: LinearOpMode() {
             telemetry.addLine(introPrompts[0])
             telemetry.update()
 
+            when (wizardState) {
+            }
 
         }
     }
 
-    private enum class State {
-        INTRO,
-        CREATE,
-        MODIFY,
-        END
-    }
-
 }
+
+sealed class ModificationCommand
+data class Insertion(val insertAfter: Int, val command: AutoDriveCommand) : ModificationCommand()
+data class Replacement(val replace: Int, val command: AutoDriveCommand) : ModificationCommand()
+
+sealed class ConfigState
+class Intro : ConfigState()
+data class Create(val fileName: String,
+                  val commands: MutableList<AutoDriveCommand>) : ConfigState()
+
+data class Modify(val fileName: String,
+                  val existingCommands: MutableList<AutoDriveCommand>,
+                  val modifications: MutableList<ModificationCommand>) : ConfigState()
+
+data class Delete(val fileName: String) : ConfigState()
+
+data class Outro(val filesCreated: List<String>,
+                 val filesModified: List<String>,
+                 val filesDeleted: List<String>) : ConfigState()

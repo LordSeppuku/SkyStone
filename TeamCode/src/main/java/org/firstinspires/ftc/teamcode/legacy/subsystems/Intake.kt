@@ -34,13 +34,12 @@ class Intake {
         rightMotor.direction = DcMotorSimple.Direction.REVERSE
         //leftServo.direction = Servo.Direction.REVERSE
 
-        leftServo.position = -1.0
-        rightServo.position = 1.0
+        leftServo.position = 0.6
+        rightServo.position = 0.6
     }
 
     fun update(gamepad: Gamepad, telemetry: Telemetry) {
         with(gamepad) {
-
             if (intake.update(b) != ButtonState.NOT_PRESSED) {
                 leftMotor.power = -1.0
                 rightMotor.power = -1.0
@@ -57,19 +56,17 @@ class Intake {
             }
 
             if (popOff.update(x) != ButtonState.NOT_PRESSED) {
-                leftServo.position = -0.3
-                rightServo.position = 0.3
+                leftServo.position = 0.9
+                rightServo.position = 0.9
 
                 telemetry.addLine("P O P P I N  O F F")
             } else if (unPop.update(y) != ButtonState.NOT_PRESSED) {
-                leftServo.position = -1.0
-                rightServo.position = 1.0
+                leftServo.position = 0.6
+                rightServo.position = 0.6
 
-                telemetry.addLine("U N E R E C T I N")
+                telemetry.addLine("U N P O P P I N")
             } else {
-
             }
-
         }
     }
 

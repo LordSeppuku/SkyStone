@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode.legacy.subsystems
 
-import arrow.core.extensions.ior.bifunctor.leftFunctor
-import com.qualcomm.robotcore.hardware.*
+import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.hardware.Gamepad
+import com.qualcomm.robotcore.hardware.HardwareMap
+import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.teamcode.legacy.lib.Button
 import org.firstinspires.ftc.teamcode.legacy.lib.ButtonState
@@ -24,17 +26,18 @@ class Arm {
         motor = hardwareMap.dcMotor["dcArm"]
 
         motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        servo.position = 0.0
+        servo.direction = Servo.Direction.REVERSE
+        servo.position = 0.15
     }
 
     fun update(gamepad: Gamepad, telemetry: Telemetry) {
         with(gamepad) {
-            motor.power = (left_trigger - right_trigger).toDouble()
+            motor.power = (left_trigger - right_trigger) * 0.1875
 
             if (clasp.update(right_bumper) != ButtonState.NOT_PRESSED) {
-                servo.position = -0.2
+                servo.position = 0.25
             } else if (unclasp.update(left_bumper) != ButtonState.NOT_PRESSED) {
-                servo.position = 0.0
+                servo.position = 0.15
             } else {
 
             }

@@ -1,11 +1,11 @@
 package org.firstinspires.ftc.teamcode.legacy.opmodes.test
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
-import com.qualcomm.robotcore.hardware.DcMotor
 import org.firstinspires.ftc.teamcode.legacy.lib.Button
-import org.firstinspires.ftc.teamcode.legacy.lib.ButtonState
 
+@Disabled
 @TeleOp(name = "Motor Test", group = "Test")
 class MotorTest: LinearOpMode() {
 

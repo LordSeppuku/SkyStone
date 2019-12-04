@@ -12,11 +12,11 @@ class CenterDrive: LinearOpMode() {
     val drivetrain: MecanumDrivetrain = MecanumDrivetrain()
     val runtime: ElapsedTime = ElapsedTime()
 
-    val leftCommands = arrayOf<AutoDriveCommand>(
+    val leftCommands = arrayOf(
             AutoDriveCommand(Distance(0.0), Distance(-28.0), Rotation(0.0), 6.0)
     )
 
-    val rightCommands = arrayOf<AutoDriveCommand>(
+    val rightCommands = arrayOf(
             AutoDriveCommand(Distance(0.0), Distance(28.0), Rotation(0.0), 6.0)
     )
 
@@ -27,9 +27,11 @@ class CenterDrive: LinearOpMode() {
 
         waitForStart()
         runtime.reset()
+
         commands.forEach {
-            val done = drivetrain.setAutoDrive(it)
-            while (done.invoke() && opModeIsActive()) {}
+            drivetrain.setAutoDrive(it).invoke(::opModeIsActive) {
+
+            }
         }
 
     }
@@ -42,28 +44,64 @@ class CenterDrive: LinearOpMode() {
             RIGHT: GO RIGHT
         """.trimIndent()
 
+        val lOutro = """
+            YOU HAVE SELECTED LEFT COMMANDS
+            ===============================
+            RIGHT: ACCEPT
+            LEFT: RETURN
+        """.trimIndent()
+
+        val rOutro = """
+            YOU HAVE SELECTED RIGHT COMMANDS
+            ================================
+            RIGHT: ACCEPT
+            LEFT: RETURN
+        """.trimIndent()
+
         val left = Button()
         val right = Button()
 
-        telemetry.clear()
-        telemetry.addLine(intro)
-        telemetry.update()
-
-        while (left.update(gamepad1.dpad_left) == ButtonState.NOT_PRESSED && right.update(gamepad1.dpad_right) == ButtonState.NOT_PRESSED) {}
-
-        telemetry.clear()
-        telemetry.update()
-
-        if (left.state != ButtonState.NOT_PRESSED) {
-            telemetry.addLine("Left selected")
+        start@ while (!isStopRequested) {
+            telemetry.clear()
+            telemetry.addLine(intro)
             telemetry.update()
-            return leftCommands
-        }
-        else {
-            telemetry.addLine("Right selected")
+
+            while (left.update(gamepad1.dpad_left) == ButtonState.NOT_PRESSED
+                    && right.update(gamepad1.dpad_right) == ButtonState.NOT_PRESSED
+                    && opModeIsActive()) {
+            }
+
+            telemetry.clear()
             telemetry.update()
-            return rightCommands
+
+            if (left.state != ButtonState.NOT_PRESSED) {
+                telemetry.addLine(lOutro)
+                telemetry.update()
+
+                while (right.update(gamepad1.dpad_right) != ButtonState.PRESSED && opModeIsActive()) {
+                    if (left.update(gamepad1.dpad_left) == ButtonState.PRESSED && opModeIsActive()) {
+                        break@start
+                    }
+                }
+
+                return leftCommands
+            }
+            if (right.state != ButtonState.NOT_PRESSED) {
+                telemetry.addLine(rOutro)
+                telemetry.update()
+
+                while (right.update(gamepad1.dpad_right) != ButtonState.PRESSED && opModeIsActive()) {
+                    if (left.update(gamepad1.dpad_left) == ButtonState.PRESSED && opModeIsActive()) {
+                        break@start
+                    }
+                }
+
+                return rightCommands
+            }
         }
+
+        return rightCommands
+
     }
 
 }

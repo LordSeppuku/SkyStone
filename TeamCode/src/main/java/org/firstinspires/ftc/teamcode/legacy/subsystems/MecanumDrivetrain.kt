@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.legacy.lib.AutoDriveCommand
 import org.firstinspires.ftc.teamcode.legacy.lib.Distance
 import kotlin.math.roundToInt
 
-class MecanumDrivetrain() {
+class MecanumDrivetrain {
 
     private lateinit var hardwareMap: HardwareMap
     val WHEEL_RADIUS = Distance(100.0, DistanceUnit.MM)
@@ -20,17 +20,21 @@ class MecanumDrivetrain() {
     val GEAR_RATIO = (8 / 14).toDouble()
     val TICKS_PER_REV = 1425.2
 
+    var driveStatus: DriveStatus = DriveStatus.UNINIT
+        private set
+
+
     private val FL: DcMotorEx
-        get() = hardwareMap?.dcMotor.get("fl") as DcMotorEx
+        get() = hardwareMap.dcMotor.get("fl") as DcMotorEx
 
     private val FR: DcMotorEx
-        get() = hardwareMap?.dcMotor.get("fr") as DcMotorEx
+        get() = hardwareMap.dcMotor.get("fr") as DcMotorEx
 
     private val BL: DcMotorEx
-        get() = hardwareMap?.dcMotor.get("bl") as DcMotorEx
+        get() = hardwareMap.dcMotor.get("bl") as DcMotorEx
 
     private val BR: DcMotorEx
-        get() = hardwareMap?.dcMotor.get("br") as DcMotorEx
+        get() = hardwareMap.dcMotor.get("br") as DcMotorEx
 
     fun init(hardwareMap: HardwareMap) {
         this.hardwareMap = hardwareMap
@@ -38,12 +42,11 @@ class MecanumDrivetrain() {
         BR.direction = DcMotorSimple.Direction.REVERSE
         BL.direction = DcMotorSimple.Direction.REVERSE
         changeEncoderMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER)
+
+        driveStatus = DriveStatus.INIT
     }
 
-    fun changeEncoderMode(runMode: DcMotor.RunMode): DcMotor.RunMode {
-
-        if (FL.mode == runMode) return FL.mode
-
+    private fun changeEncoderMode(runMode: DcMotor.RunMode): DcMotor.RunMode {
         FL.mode = runMode
         FR.mode = runMode
         BL.mode = runMode
@@ -52,9 +55,13 @@ class MecanumDrivetrain() {
         return FL.mode
     }
 
-
-
     fun arcadeDrive(lateral: Double, horizontal: Double, c: Double) {
+
+        if (driveStatus != DriveStatus.DIRECT_CONTROL) {
+            changeEncoderMode(DcMotor.RunMode.RUN_USING_ENCODER)
+            driveStatus = DriveStatus.DIRECT_CONTROL
+        }
+
         changeEncoderMode(DcMotor.RunMode.RUN_USING_ENCODER)
 
         FL.power = Range.clip(lateral + horizontal - c, -1.0, 1.0)
@@ -64,7 +71,11 @@ class MecanumDrivetrain() {
     }
 
     fun tankDrive(y1: Double, y2: Double, lt: Double, rt: Double) {
-        changeEncoderMode(DcMotor.RunMode.RUN_USING_ENCODER)
+
+        if (driveStatus != DriveStatus.DIRECT_CONTROL) {
+            changeEncoderMode(DcMotor.RunMode.RUN_USING_ENCODER)
+            driveStatus = DriveStatus.DIRECT_CONTROL
+        }
 
         FL.power = Range.clip(y1 - lt + rt, -1.0, 1.0)
         FR.power = Range.clip(y2 + lt - rt, -1.0, 1.0)
@@ -72,7 +83,9 @@ class MecanumDrivetrain() {
         BR.power = Range.clip(y2 - lt + rt, -1.0, 1.0)
     }
 
-    fun setAutoDrive(command: AutoDriveCommand): () -> Boolean {
+    fun setAutoDrive(command: AutoDriveCommand): (() -> Boolean, () -> Unit) -> DriveStatus {
+
+        changeEncoderMode(DcMotor.RunMode.RUN_USING_ENCODER)
 
         val radius = WHEEL_RADIUS.run { unit.toMeters(value) }
         val x = command.lateral.run { unit.toMeters(value) }
@@ -96,7 +109,8 @@ class MecanumDrivetrain() {
         BL.targetPosition = BL.targetPosition + tbl
         BR.targetPosition = BR.targetPosition + tbr
 
-        changeEncoderMode(DcMotor.RunMode.RUN_USING_ENCODER)
+        driveStatus = DriveStatus.DRIVING_TO_POS
+
         changeEncoderMode(DcMotor.RunMode.RUN_TO_POSITION)
 
         FL.setVelocity(vfl, AngleUnit.RADIANS)
@@ -104,8 +118,17 @@ class MecanumDrivetrain() {
         BL.setVelocity(vbl, AngleUnit.RADIANS)
         BR.setVelocity(vbr, AngleUnit.RADIANS)
 
-        return { FL.isBusy }
+        return { activeOpMode: () -> Boolean, busyAction: () -> Unit ->
+            while (FL.isBusy && activeOpMode()) busyAction()
+            driveStatus = DriveStatus.COMPLETED
+            driveStatus
+        }
 
     }
+
+    enum class DriveStatus {
+        UNINIT, INIT, READY, DIRECT_CONTROL, DRIVING_TO_POS, COMPLETED
+    }
+
 }
 
