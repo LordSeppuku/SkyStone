@@ -2,20 +2,24 @@ package org.firstinspires.ftc.teamcode.lib.command
 
 interface Command {
 
+    val type: Type
+
     fun registerHardwareDevices()
 
-    fun init()
+    fun getStatus(): Status
 
-    fun run()
+    fun init(): Status
 
-    fun stop()
+    fun run(): Status
 
-}
+    fun stop(): Status
 
-enum class COMMAND_TYPE {
-    PERIODIC, IMPULSE
-}
+    enum class Type {
+        PERIODIC, IMPULSE
+    }
 
-enum class COMMAND_STATUS {
-    INACTIVE, INITIALIZED, PROCESSING, FINISHED
+    enum class Status {
+        INACTIVE, INITIALIZED, PROCESSING, FINISHED
+    }
+
 }

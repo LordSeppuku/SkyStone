@@ -1,49 +1,23 @@
-package org.firstinspires.ftc.teamcode.legacy.opmodes.auto
+package org.firstinspires.ftc.teamcode.legacy.opmodes.test
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
-import com.qualcomm.robotcore.util.ElapsedTime
-import org.firstinspires.ftc.teamcode.legacy.lib.*
-import org.firstinspires.ftc.teamcode.legacy.subsystems.MecanumDrivetrain
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp
+import org.firstinspires.ftc.teamcode.legacy.lib.Button
+import org.firstinspires.ftc.teamcode.legacy.lib.ButtonState
 
-@Autonomous(name = "Drive to Center", group = "bad")
-class CenterDrive: LinearOpMode() {
-
-    val drivetrain: MecanumDrivetrain = MecanumDrivetrain()
-    val runtime: ElapsedTime = ElapsedTime()
-
-    val leftCommands = listOf(
-            AutoDriveCommand(Distance(24.0), Distance(0.0), Rotation(0.0), 1.0)
-    )
-
-    val rightCommands = listOf(
-            AutoDriveCommand(Distance(24.0), Distance(0.0), Rotation(0.0), 1.0)
-    )
+@TeleOp(name = "PromptTest", group = "Test")
+class PromptTest : LinearOpMode() {
+    val leftCommands = listOf<Int>()
+    val rightCommands = listOf<Int>()
 
     override fun runOpMode() {
 
-        drivetrain.init(hardwareMap)
-        val commands = selectionPrompt()
-
-        if (isStopRequested) return
-
+        selectionPrompt()
         waitForStart()
-        runtime.reset()
-
-        for (command in commands) {
-            drivetrain.setAutoDrive(command)(::opModeIsActive) {
-                telemetry.addLine("DRIVING")
-                telemetry.update()
-            }
-        }
-
-        telemetry.clear()
-        telemetry.addLine("AAAA")
-        telemetry.update()
 
     }
 
-    fun selectionPrompt(): List<AutoDriveCommand> {
+    fun selectionPrompt(): List<Int> {
         val intro = """
             USE THE LEFT AND RIGHT DPAD BUTTONS FOR SELECTION
             ================================================
@@ -73,9 +47,9 @@ class CenterDrive: LinearOpMode() {
             telemetry.addLine(intro)
             telemetry.update()
 
-            while (left.update(gamepad1.dpad_left) == ButtonState.NOT_PRESSED
-                    && right.update(gamepad1.dpad_right) == ButtonState.NOT_PRESSED
-                    && opModeIsActive()) {
+            while (left.update(gamepad1.dpad_left) != ButtonState.PRESSED
+                    && right.update(gamepad1.dpad_right) != ButtonState.PRESSED
+                    && !isStopRequested) {
             }
 
             telemetry.clear()
@@ -121,5 +95,4 @@ class CenterDrive: LinearOpMode() {
         return rightCommands
 
     }
-
 }

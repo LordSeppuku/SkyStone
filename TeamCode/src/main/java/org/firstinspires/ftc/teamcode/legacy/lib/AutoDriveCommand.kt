@@ -6,7 +6,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit
 data class AutoDriveCommand(val lateral: Distance = Distance(),
                             val horizontal: Distance = Distance(),
                             val rotation: Rotation = Rotation(),
-                            val time: Double = 0.0)
+                            val power: Double = 0.5)
 
 data class Distance(val value: Double = 0.0, val unit: DistanceUnit = DistanceUnit.INCH)
 

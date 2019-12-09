@@ -24,6 +24,10 @@ repositories {
     flatDir {
         dirs '../libs'
     }
+
+    allprojects {
+        jcenter()
+    }
     mavenCentral()
 }
 

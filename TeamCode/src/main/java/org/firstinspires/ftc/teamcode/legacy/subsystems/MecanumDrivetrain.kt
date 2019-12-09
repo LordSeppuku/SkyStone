@@ -1,24 +1,29 @@
 package org.firstinspires.ftc.teamcode.legacy.subsystems
 
+import android.util.Log
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.util.Range
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
+import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit
 import org.firstinspires.ftc.teamcode.legacy.lib.AutoDriveCommand
 import org.firstinspires.ftc.teamcode.legacy.lib.Distance
+import org.firstinspires.ftc.teamcode.legacy.lib.Rotation
+import kotlin.math.PI
 import kotlin.math.roundToInt
 
 class MecanumDrivetrain {
 
     private lateinit var hardwareMap: HardwareMap
-    val WHEEL_RADIUS = Distance(100.0, DistanceUnit.MM)
+    val WHEEL_RADIUS = Distance(50.0, DistanceUnit.MM)
     val DRIVETRAIN_WIDTH = Distance(5.25, DistanceUnit.INCH)
     val DRIVETRAIN_LENGTH = Distance(2.875, DistanceUnit.INCH)
-    val GEAR_RATIO = (8 / 14).toDouble()
-    val TICKS_PER_REV = 1425.2
+    val GEAR_RATIO: Double = 8.0 / 14.0
+    val TICKS_PER_REV: Double = 1425.2
+    val MAX_MOTOR_VELOCITY = Rotation(1.95 * 2 * PI, UnnormalizedAngleUnit.RADIANS)
+    val MAX_WHEEL_VELOCITY = Rotation(1.95 * 2 * PI * (1 / GEAR_RATIO), UnnormalizedAngleUnit.RADIANS)
 
     var driveStatus: DriveStatus = DriveStatus.UNINIT
         private set
@@ -37,6 +42,8 @@ class MecanumDrivetrain {
         get() = hardwareMap.dcMotor.get("br") as DcMotorEx
 
     fun init(hardwareMap: HardwareMap) {
+        if (driveStatus != DriveStatus.UNINIT) return
+
         this.hardwareMap = hardwareMap
         FR.direction = DcMotorSimple.Direction.REVERSE
         BR.direction = DcMotorSimple.Direction.REVERSE
@@ -44,6 +51,8 @@ class MecanumDrivetrain {
         changeEncoderMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER)
 
         driveStatus = DriveStatus.INIT
+
+        changeEncoderMode(DcMotor.RunMode.RUN_USING_ENCODER)
     }
 
     private fun changeEncoderMode(runMode: DcMotor.RunMode): DcMotor.RunMode {
@@ -94,40 +103,58 @@ class MecanumDrivetrain {
         val drive = DRIVETRAIN_WIDTH.run { unit.toMeters(value) } + DRIVETRAIN_LENGTH.run { unit.toMeters(value) }
         val r = (1.0 / radius)
 
+        Log.i("Numbers", "$radius $x $y $w $drive $r ${command.power} $GEAR_RATIO $TICKS_PER_REV")
+
         val vfl = GEAR_RATIO * r * (x + y - (drive * w))
         val vfr = GEAR_RATIO * r * (x - y + (drive * w))
         val vbl = GEAR_RATIO * r * (x - y - (drive * w))
         val vbr = GEAR_RATIO * r * (x + y + (drive * w))
 
-        val tfl = (vfl * command.time * TICKS_PER_REV).roundToInt()
-        val tfr = (vfr * command.time * TICKS_PER_REV).roundToInt()
-        val tbl = (vbl * command.time * TICKS_PER_REV).roundToInt()
-        val tbr = (vbr * command.time * TICKS_PER_REV).roundToInt()
+        val pfl = ((vfl / (2 * PI)) * TICKS_PER_REV)
+        val pfr = ((vfr / (2 * PI)) * TICKS_PER_REV)
+        val pbl = ((vbl / (2 * PI)) * TICKS_PER_REV)
+        val pbr = ((vbr / (2 * PI)) * TICKS_PER_REV)
 
-        FL.targetPosition = FL.targetPosition + tfl
-        FR.targetPosition = FR.targetPosition + tfr
-        BL.targetPosition = BL.targetPosition + tbl
-        BR.targetPosition = BR.targetPosition + tbr
+        FL.targetPosition += pfl.roundToInt()
+        FR.targetPosition += pfr.roundToInt()
+        BL.targetPosition += pbl.roundToInt()
+        BR.targetPosition += pbr.roundToInt()
 
-        driveStatus = DriveStatus.DRIVING_TO_POS
+        driveStatus = DriveStatus.DRIVING_TO_POSITION
+
+        Log.i("FL target position", "$pfl")
 
         changeEncoderMode(DcMotor.RunMode.RUN_TO_POSITION)
 
-        FL.setVelocity(vfl, AngleUnit.RADIANS)
-        FR.setVelocity(vfr, AngleUnit.RADIANS)
-        BL.setVelocity(vbl, AngleUnit.RADIANS)
-        BR.setVelocity(vbr, AngleUnit.RADIANS)
+        with(command) {
+            FL.power = power
+            FR.power = power
+            BL.power = power
+            BR.power = power
+        }
 
         return { activeOpMode: () -> Boolean, busyAction: () -> Unit ->
-            while (FL.isBusy && activeOpMode()) busyAction()
-            driveStatus = DriveStatus.COMPLETED
+            while (FL.isBusy && activeOpMode()) {
+                busyAction()
+            }
+            driveStatus = DriveStatus.READY
+
+            changeEncoderMode(DcMotor.RunMode.RUN_USING_ENCODER)
+
+            FL.power = 0.0
+            FR.power = 0.0
+            BL.power = 0.0
+            BR.power = 0.0
+
             driveStatus
+
         }
+
 
     }
 
     enum class DriveStatus {
-        UNINIT, INIT, READY, DIRECT_CONTROL, DRIVING_TO_POS, COMPLETED
+        UNINIT, INIT, READY, DIRECT_CONTROL, DRIVING_TO_POSITION
     }
 
 }

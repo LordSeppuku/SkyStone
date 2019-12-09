@@ -38,8 +38,6 @@ class Arm {
                 servo.position = 0.25
             } else if (unclasp.update(left_bumper) != ButtonState.NOT_PRESSED) {
                 servo.position = 0.15
-            } else {
-
             }
         }
     }

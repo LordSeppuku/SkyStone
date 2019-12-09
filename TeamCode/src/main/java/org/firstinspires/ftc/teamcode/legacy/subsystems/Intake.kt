@@ -22,6 +22,9 @@ class Intake {
     private val popOff = Button()
     private val unPop = Button()
 
+    var state: State = State.IN
+        private set
+
     fun init(hwMap: HardwareMap) {
         this.hardwareMap = hwMap
 
@@ -32,7 +35,8 @@ class Intake {
         rightMotor = hardwareMap.dcMotor["inDcR"]
 
         rightMotor.direction = DcMotorSimple.Direction.REVERSE
-        //leftServo.direction = Servo.Direction.REVERSE
+
+        leftServo.direction = Servo.Direction.REVERSE
 
         leftServo.position = 0.6
         rightServo.position = 0.6
@@ -68,6 +72,10 @@ class Intake {
             } else {
             }
         }
+    }
+
+    enum class State {
+        OUT, IN
     }
 
 }

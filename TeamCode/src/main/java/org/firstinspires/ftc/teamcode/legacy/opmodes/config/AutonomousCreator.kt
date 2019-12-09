@@ -8,25 +8,6 @@ import java.io.File
 @TeleOp(name = "Create/Modify AutoOP", group = "Configuration")
 class AutonomousCreator: LinearOpMode() {
 
-    private val introPrompts: List<String> = listOf(
-            """
-                Welcome to the Autonomous Creation Wizard!
-                Please attach a controller to slot 1.
-                For this application, 
-                you will only need to use the D-pad
-                buttons, the "A" button, and the "B" button.
-                ============================================
-                PRESS "A" TO CONTINUE
-                PRESS "B" TO EXIT
-            """.trimIndent(),
-            """
-                What do YOU want to do today?
-                =============================
-                UP: Create new Autonomous
-                DOWN: Modify existing Autonomous
-            """.trimIndent()
-    )
-
     private val creationPrompts: List<String> = listOf(
             """
                 YOU HAVE SELECTED
@@ -69,23 +50,43 @@ class AutonomousCreator: LinearOpMode() {
         telemetry.clear()
 
         while(opModeIsActive()) {
-            telemetry.addLine(introPrompts[0])
-            telemetry.update()
-
             when (wizardState) {
+                is Intro -> wizardState
             }
-
         }
     }
-
 }
 
 sealed class ModificationCommand
 data class Insertion(val insertAfter: Int, val command: AutoDriveCommand) : ModificationCommand()
 data class Replacement(val replace: Int, val command: AutoDriveCommand) : ModificationCommand()
 
-sealed class ConfigState
-class Intro : ConfigState()
+sealed class ConfigState {
+    //abstract val prompts: List<String>
+}
+
+class Intro : ConfigState() {
+    /*override val prompts = listOf(
+            """
+                Welcome to the Autonomous Creation Wizard!
+                Please attach a controller to slot 1.
+                For this application, 
+                you will only need to use the D-pad
+                buttons, the "A" button, and the "B" button.
+                ============================================
+                PRESS "A" TO CONTINUE
+                PRESS "B" TO EXIT
+            """.trimIndent(),
+            """
+                What do YOU want to do today?
+                =============================
+                UP: Create new Autonomous
+                DOWN: Modify existing Autonomous
+            """.trimIndent()
+    )*/
+}
+
+data class FileSelection(val files: List<File>) : ConfigState()
 data class Create(val fileName: String,
                   val commands: MutableList<AutoDriveCommand>) : ConfigState()
 
