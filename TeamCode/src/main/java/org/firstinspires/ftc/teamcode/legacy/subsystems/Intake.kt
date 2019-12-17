@@ -74,6 +74,30 @@ class Intake {
         }
     }
 
+    fun update(gamepad: Gamepad) {
+        with(gamepad) {
+            if (intake.update(b) != ButtonState.NOT_PRESSED) {
+                leftMotor.power = -1.0
+                rightMotor.power = -1.0
+            } else if (exhaust.update(a) != ButtonState.NOT_PRESSED) {
+                leftMotor.power = 1.0
+                rightMotor.power = 1.0
+            } else {
+                leftMotor.power = 0.0
+                rightMotor.power = 0.0
+            }
+
+            if (popOff.update(x) != ButtonState.NOT_PRESSED) {
+                leftServo.position = 0.9
+                rightServo.position = 0.9
+            } else if (unPop.update(y) != ButtonState.NOT_PRESSED) {
+                leftServo.position = 0.6
+                rightServo.position = 0.6
+            } else {
+            }
+        }
+    }
+
     enum class State {
         OUT, IN
     }

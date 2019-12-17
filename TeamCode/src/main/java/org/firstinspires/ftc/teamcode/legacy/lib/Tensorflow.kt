@@ -32,16 +32,14 @@ class Tensorflow(hwMap: HardwareMap) {
                     vuforiaLicenseKey = VUFORIA_KEY
                     cameraName = hwMap.get(WebcamName::class.java, "Webcam 1")
                 })
-        ).apply {
-            loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT)
+        ).also {
+            it.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT)
         }
     }
 
-    fun acquireRecognitions(): () -> List<Recognition> {
+    fun acquireRecognitions(): MutableList<Recognition>? {
         start()
-        return {
-            tfod.updatedRecognitions as List<Recognition>
-        }
+        return tfod.updatedRecognitions
     }
 
     fun start() {

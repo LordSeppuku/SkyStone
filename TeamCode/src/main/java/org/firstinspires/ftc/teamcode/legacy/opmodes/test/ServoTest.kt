@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.legacy.lib.ButtonState
 class ServoTest : LinearOpMode() {
     override fun runOpMode() {
 
-        val servo = hardwareMap.servo.get("srv")
+        val servo = hardwareMap.servo.get("srvArm")
         var testPos = 0.0
         var tgtPos = 0.0
 

@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.legacy.opmodes.config
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
-import org.firstinspires.ftc.teamcode.legacy.lib.AutoDriveCommand
+import org.firstinspires.ftc.teamcode.legacy.lib.DriveToPositionCommand
 import java.io.File
 
+@Disabled
 @TeleOp(name = "Create/Modify AutoOP", group = "Configuration")
 class AutonomousCreator: LinearOpMode() {
 
@@ -58,8 +60,8 @@ class AutonomousCreator: LinearOpMode() {
 }
 
 sealed class ModificationCommand
-data class Insertion(val insertAfter: Int, val command: AutoDriveCommand) : ModificationCommand()
-data class Replacement(val replace: Int, val command: AutoDriveCommand) : ModificationCommand()
+data class Insertion(val insertAfter: Int, val command: DriveToPositionCommand) : ModificationCommand()
+data class Replacement(val replace: Int, val command: DriveToPositionCommand) : ModificationCommand()
 
 sealed class ConfigState {
     //abstract val prompts: List<String>
@@ -88,10 +90,10 @@ class Intro : ConfigState() {
 
 data class FileSelection(val files: List<File>) : ConfigState()
 data class Create(val fileName: String,
-                  val commands: MutableList<AutoDriveCommand>) : ConfigState()
+                  val commands: MutableList<DriveToPositionCommand>) : ConfigState()
 
 data class Modify(val fileName: String,
-                  val existingCommands: MutableList<AutoDriveCommand>,
+                  val existingCommands: MutableList<DriveToPositionCommand>,
                   val modifications: MutableList<ModificationCommand>) : ConfigState()
 
 data class Delete(val fileName: String) : ConfigState()

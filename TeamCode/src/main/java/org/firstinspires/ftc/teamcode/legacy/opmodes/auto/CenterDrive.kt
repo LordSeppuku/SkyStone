@@ -6,18 +6,18 @@ import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.teamcode.legacy.lib.*
 import org.firstinspires.ftc.teamcode.legacy.subsystems.MecanumDrivetrain
 
-@Autonomous(name = "Drive to Center", group = "bad")
+@Autonomous(name = "Center Drive", group = "bad")
 class CenterDrive: LinearOpMode() {
 
     val drivetrain: MecanumDrivetrain = MecanumDrivetrain()
     val runtime: ElapsedTime = ElapsedTime()
 
     val leftCommands = listOf(
-            AutoDriveCommand(Distance(24.0), Distance(0.0), Rotation(0.0), 1.0)
+            DriveToPositionCommand(Distance(0.0), Distance(-36.0), Rotation(0.0), 1.0)
     )
 
     val rightCommands = listOf(
-            AutoDriveCommand(Distance(24.0), Distance(0.0), Rotation(0.0), 1.0)
+            DriveToPositionCommand(Distance(0.0), Distance(36.0), Rotation(0.0), 1.0)
     )
 
     override fun runOpMode() {
@@ -31,7 +31,7 @@ class CenterDrive: LinearOpMode() {
         runtime.reset()
 
         for (command in commands) {
-            drivetrain.setAutoDrive(command)(::opModeIsActive) {
+            drivetrain.driveToPosition(command)(::opModeIsActive) {
                 telemetry.addLine("DRIVING")
                 telemetry.update()
             }
@@ -43,7 +43,7 @@ class CenterDrive: LinearOpMode() {
 
     }
 
-    fun selectionPrompt(): List<AutoDriveCommand> {
+    fun selectionPrompt(): List<DriveToPositionCommand> {
         val intro = """
             USE THE LEFT AND RIGHT DPAD BUTTONS FOR SELECTION
             ================================================
