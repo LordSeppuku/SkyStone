@@ -7,7 +7,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation
-import kotlin.math.PI
 
 class IMU(private val hwMap: HardwareMap) {
 
@@ -34,11 +33,12 @@ class IMU(private val hwMap: HardwareMap) {
 
     val angles: () -> Orientation = {
         init()
-        imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).apply {
+        imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS)/*.apply {
             firstAngle = (((2 * PI) - firstAngle) % 2 * PI).toFloat()
             secondAngle = (((2 * PI) - secondAngle) % 2 * PI).toFloat()
             thirdAngle = (((2 * PI) - thirdAngle) % 2 * PI).toFloat()
         }
+        */
     }
 
 }

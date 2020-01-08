@@ -62,9 +62,12 @@ class MecanumDrivetrain {
         if (driveStatus != DriveStatus.UNINIT) return
 
         this.hardwareMap = hardwareMap
+        FL.direction = DcMotorSimple.Direction.REVERSE
+        /*
         FR.direction = DcMotorSimple.Direction.REVERSE
         BR.direction = DcMotorSimple.Direction.REVERSE
         BL.direction = DcMotorSimple.Direction.REVERSE
+         */
         changeEncoderMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER)
 
         driveStatus = DriveStatus.INIT
@@ -96,7 +99,7 @@ class MecanumDrivetrain {
         }
 
         val y = lateral.pow(3)
-        val x = horizontal.pow(3)
+        val x = -horizontal.pow(3)
         val w = c.pow(3)
 
         FL.power = Range.clip(y - x - w, -1.0, 1.0)
@@ -128,10 +131,10 @@ class MecanumDrivetrain {
         val drive = DRIVETRAIN_WIDTH.run { unit.toMeters(value) } + DRIVETRAIN_LENGTH.run { unit.toMeters(value) }
         val r = (1.0 / radius)
 
-        val vfl = GEAR_RATIO * r * (x - y - (drive * w))
-        val vfr = GEAR_RATIO * r * (x + y + (drive * w))
-        val vbl = GEAR_RATIO * r * (x + y - (drive * w))
-        val vbr = GEAR_RATIO * r * (x - y + (drive * w))
+        val vfl = (GEAR_RATIO * r) * (x - y - (drive * w))
+        val vfr = (GEAR_RATIO * r) * (x + y + (drive * w))
+        val vbl = (GEAR_RATIO * r) * (x + y - (drive * w))
+        val vbr = (GEAR_RATIO * r) * (x - y + (drive * w))
 
         FL.setVelocity(vfl, AngleUnit.RADIANS)
         FR.setVelocity(vfr, AngleUnit.RADIANS)
@@ -210,6 +213,35 @@ class MecanumDrivetrain {
         }
     }
 
+    fun localization(deltaTime: Double) {
+        val r = WHEEL_RADIUS.run { unit.toMeters(value) }
+
+        val velW1 = FL.getVelocity(AngleUnit.RADIANS) * 1 / GEAR_RATIO
+        val velW2 = FR.getVelocity(AngleUnit.RADIANS) * 1 / GEAR_RATIO
+        val velW3 = BL.getVelocity(AngleUnit.RADIANS) * 1 / GEAR_RATIO
+        val velW4 = BR.getVelocity(AngleUnit.RADIANS) * 1 / GEAR_RATIO
+
+        val vX = r / 4 * (velW1 + velW2 + velW3 + velW4)
+        val vY = r / 4 * (-velW1 + velW2 + velW3 - velW4)
+        val wZ = r / (4 * (DRIVETRAIN_WIDTH.run { unit.toMeters(value) } + DRIVETRAIN_LENGTH.run { unit.toMeters(value) })) * (-velW1 + velW2 - velW3 + velW4)
+
+        val deltX = vX * deltaTime
+        val deltY = vY * deltaTime
+        val deltW = wZ * deltaTime
+
+        val workX = X.unit.toMeters(X.value)
+        val workY = Y.unit.toMeters(Y.value)
+        val workW = Theta.unit.toRadians(Theta.value)
+
+        X = Distance(workY + deltY, DistanceUnit.METER)
+        Y = Distance(workX + deltX, DistanceUnit.METER)
+        Theta = Rotation(workW + deltW, UnnormalizedAngleUnit.RADIANS)
+
+        lastX = X.value
+        lastY = Y.value
+        lastTheta = Theta.value
+    }
+
     fun localization(imu: IMU) {
         val deltM0 = FL.currentPosition - lastM0
         val deltM1 = FR.currentPosition - lastM1
@@ -223,10 +255,12 @@ class MecanumDrivetrain {
 
         val displAvg = (displM0 + displM1 + displM2 + displM3) / 4.0
 
-        val devM0 = displM0 - displAvg
-        val devM1 = displM1 + displAvg
-        val devM2 = displM2 - displAvg
-        val devM3 = displM3 + displAvg
+        val yo = (WHEEL_RADIUS.unit.toInches(WHEEL_RADIUS.value) / (4) * DRIVETRAIN_WIDTH.run { unit.toMeters(value) } + DRIVETRAIN_LENGTH.run { unit.toMeters(value) })
+
+        val devM0 = displM0 + displAvg * yo
+        val devM1 = displM1 - displAvg * yo
+        val devM2 = displM2 + displAvg * yo
+        val devM3 = displM3 - displAvg * yo
 
         val deltXr = (-devM0 + devM1 + devM2 - devM3) * (WHEEL_RADIUS.unit.toInches(WHEEL_RADIUS.value) / 4)
         val deltYr = (devM0 + devM1 + devM2 + devM3) * (WHEEL_RADIUS.unit.toInches(WHEEL_RADIUS.value) / 4)
@@ -246,11 +280,11 @@ class MecanumDrivetrain {
         val deltXf = deltXr * cosTheta - deltYr * sinTheta
         val deltYf = deltYr * cosTheta + deltXr * sinTheta
 
-        X = Distance(lastX + deltXf)
-        Y = Distance(lastY + deltYf)
+        X = Distance(lastX + deltYf)
+        Y = Distance(lastY + deltXf)
         lastX = X.value
         lastY = Y.value
-        Theta = Rotation(Theta.value + (robotTheta.toDouble() - lastTheta))
+        //Theta = Rotation(Theta.value + (robotTheta.toDouble() - lastTheta))
         lastM0 = FL.currentPosition
         lastM1 = FR.currentPosition
         lastM2 = BL.currentPosition
