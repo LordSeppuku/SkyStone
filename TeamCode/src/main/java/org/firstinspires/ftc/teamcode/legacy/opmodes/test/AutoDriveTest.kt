@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.RogueOpModes.Autonomous
 
 import android.util.Log
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode
 import com.qualcomm.robotcore.hardware.DcMotorEx
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.INCH
 import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit
 import kotlin.math.PI
 
+@Disabled
 @Autonomous(name = "Crater Side OP", group = "Theoretical")
 class CraterSideOP : LinearOpMode() {
     var FL: DcMotorEx? = null

@@ -22,7 +22,7 @@ abstract class AdvanceRogueOpMode : LinearOpMode() {
     /**
      * All default systems and entities contained here.
      */
-    companion object {
+    protected companion object {
         val defaultPollers = listOf<EntitySystem>(
                 EncoderPoller(),
                 DcMotorPoller()

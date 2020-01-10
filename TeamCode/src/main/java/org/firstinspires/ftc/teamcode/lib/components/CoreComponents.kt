@@ -43,7 +43,7 @@ interface HardwareComponent : Component {
  * @property telemetry the current [Telemetry] instance of the current opMode
  */
 data class InternalTelemetryComponent(
-        val telemetry: Telemetry
+        val telemetry: Telemetry = EmptyTelemetry
 ) : Component
 
 /**
@@ -72,3 +72,94 @@ data class TelemetryLineComponent(
             }
         }
 ) : Component
+
+object EmptyTelemetry : Telemetry {
+    override fun getMsTransmissionInterval(): Int {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getCaptionValueSeparator(): String {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun clear() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun removeItem(item: Telemetry.Item?): Boolean {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun addData(caption: String?, format: String?, vararg args: Any?): Telemetry.Item {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun addData(caption: String?, value: Any?): Telemetry.Item {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun <T : Any?> addData(caption: String?, valueProducer: Func<T>?): Telemetry.Item {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun <T : Any?> addData(caption: String?, format: String?, valueProducer: Func<T>?): Telemetry.Item {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun removeAction(token: Any?): Boolean {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun setMsTransmissionInterval(msTransmissionInterval: Int) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun setCaptionValueSeparator(captionValueSeparator: String?) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun addLine(): Telemetry.Line {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun addLine(lineCaption: String?): Telemetry.Line {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getItemSeparator(): String {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun log(): Telemetry.Log {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun setItemSeparator(itemSeparator: String?) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun update(): Boolean {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun addAction(action: Runnable?): Any {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun setAutoClear(autoClear: Boolean) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun removeLine(line: Telemetry.Line?): Boolean {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun clearAll() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun isAutoClear(): Boolean {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+}

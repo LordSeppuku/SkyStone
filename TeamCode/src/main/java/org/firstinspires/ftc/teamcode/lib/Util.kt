@@ -3,9 +3,6 @@ package org.firstinspires.ftc.teamcode.lib
 import com.badlogic.ashley.core.Engine
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.EntitySystem
-import com.badlogic.gdx.math.Vector2
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializer
 
 /**
  * Remove all systems registered in [Engine]. Seriously.
@@ -32,9 +29,3 @@ fun Engine.addSystemsFromList(systems: List<EntitySystem>, priority: Int = 69) {
 fun Engine.addEntitiesFromList(entities: List<Entity>) {
     for (entity in entities) addEntity(entity)
 }
-
-/**
- * Serializer for Vector2 from external library.
- */
-@Serializer(forClass = Vector2::class)
-object Vector2Serializer : KSerializer<Vector2>

@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.legacy.opmodes.test
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.teamcode.legacy.subsystems.*
 import kotlin.math.pow
 
+@Disabled
 @TeleOp(name = "Vision Drive", group = "Test")
 class VisionDrive : LinearOpMode() {
 

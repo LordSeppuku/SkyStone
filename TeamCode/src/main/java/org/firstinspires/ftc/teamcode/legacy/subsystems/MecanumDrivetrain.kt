@@ -18,14 +18,18 @@ import kotlin.math.sin
 class MecanumDrivetrain {
 
     private lateinit var hardwareMap: HardwareMap
-    val WHEEL_RADIUS = Distance(50.0, DistanceUnit.MM)
-    val DRIVETRAIN_WIDTH = Distance(5.25, DistanceUnit.INCH)
-    val DRIVETRAIN_LENGTH = Distance(2.875, DistanceUnit.INCH)
-    val GEAR_RATIO: Double = 8.0 / 14.0
-    val TICKS_PER_REV: Double = 1425.2
-    val WHEEL_DISPL_PER_COUNT = Distance((WHEEL_RADIUS.unit.toInches(WHEEL_RADIUS.value) * 2 * PI * (1 / GEAR_RATIO)) / TICKS_PER_REV)
-    val MAX_MOTOR_VELOCITY = Rotation(1.95 * 2 * PI, UnnormalizedAngleUnit.RADIANS)
-    val MAX_WHEEL_VELOCITY = Rotation(1.95 * 2 * PI * (1 / GEAR_RATIO), UnnormalizedAngleUnit.RADIANS)
+
+    companion object {
+        val WHEEL_RADIUS = Distance(50.0, DistanceUnit.MM)
+        val DRIVETRAIN_WIDTH = Distance(5.25, DistanceUnit.INCH)
+        val DRIVETRAIN_LENGTH = Distance(2.875, DistanceUnit.INCH)
+        val GEAR_RATIO: Double = 8.0 / 14.0
+        val TICKS_PER_REV: Double = 1425.2
+        val WHEEL_DISPL_PER_COUNT = Distance((WHEEL_RADIUS.unit.toInches(WHEEL_RADIUS.value) * 2 * PI * (1 / GEAR_RATIO)) / TICKS_PER_REV)
+        val MAX_MOTOR_VELOCITY = Rotation(1.95 * 2 * PI, UnnormalizedAngleUnit.RADIANS)
+        val MAX_WHEEL_VELOCITY = Rotation(1.95 * 2 * PI * (1 / GEAR_RATIO), UnnormalizedAngleUnit.RADIANS)
+    }
+
 
     private var lastM0 = 0
     private var lastM1 = 0

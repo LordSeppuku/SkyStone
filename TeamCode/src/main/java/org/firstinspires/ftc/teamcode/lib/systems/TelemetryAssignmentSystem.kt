@@ -4,6 +4,8 @@ import com.badlogic.ashley.core.ComponentMapper
 import com.badlogic.ashley.core.EntitySystem
 import com.badlogic.ashley.core.Family
 import org.firstinspires.ftc.robotcore.external.Telemetry
+import org.firstinspires.ftc.teamcode.lib.components.EmptyTelemetry
+import org.firstinspires.ftc.teamcode.lib.components.InternalTelemetryComponent
 import org.firstinspires.ftc.teamcode.lib.components.TelemetryLineComponent
 
 /**
@@ -18,6 +20,7 @@ class TelemetryAssignmentSystem(val telemetry: Telemetry) : EntitySystem() {
     }
 
     private val lineMapper = ComponentMapper.getFor(TelemetryLineComponent::class.java)
+    private val telemetryMapper = ComponentMapper.getFor(InternalTelemetryComponent::class.java)
 
     override fun update(deltaTime: Float) {
         super.update(deltaTime)
@@ -28,6 +31,14 @@ class TelemetryAssignmentSystem(val telemetry: Telemetry) : EntitySystem() {
             }!!.iterator()) {
                 for (entity in entry.value) {
                     lineMapper[entity].line = telemetry.addLine()
+                }
+            }
+        }
+        engine?.getEntitiesFor(Family.all(InternalTelemetryComponent::class.java).get()).apply {
+            for (entity in this!!) {
+                if (telemetryMapper[entity].telemetry is EmptyTelemetry) {
+                    entity.remove(InternalTelemetryComponent::class.java)
+                    entity.add(InternalTelemetryComponent(telemetry))
                 }
             }
         }

@@ -20,7 +20,7 @@ class DcMotorPoller : HardwareMapSystem() {
             component.apply {
                 power = motor.power
                 direction = motor.direction
-                brakeBehavior = motor.zeroPowerBehavior
+                zeroPowerBehavior = motor.zeroPowerBehavior
             }
         }
     }

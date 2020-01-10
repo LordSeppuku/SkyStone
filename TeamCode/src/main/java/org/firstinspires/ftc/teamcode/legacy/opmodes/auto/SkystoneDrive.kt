@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.legacy.opmodes.auto
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.util.ElapsedTime
@@ -10,6 +11,7 @@ import org.firstinspires.ftc.teamcode.legacy.subsystems.Intake
 import org.firstinspires.ftc.teamcode.legacy.subsystems.MecanumDrivetrain
 import org.firstinspires.ftc.teamcode.legacy.subsystems.Vision
 
+@Disabled
 @Autonomous(name = "Skystone Drive", group = "bad")
 class SkystoneDrive : LinearOpMode() {
 

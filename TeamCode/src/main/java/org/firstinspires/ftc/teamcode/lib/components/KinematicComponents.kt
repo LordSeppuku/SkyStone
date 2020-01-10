@@ -94,16 +94,16 @@ interface DrivetrainKinematics {
 }
 
 @Serializable
-data class MecanumKinematicsComponent(
+data class MecanumKinematics(
         val wheelBaseLength: Double,
         val wheelBaseWidth: Double
-) : DrivetrainKinematics, Component {
+) : DrivetrainKinematics {
     /**
      * @param rotations assumes that first element is Front-Left Wheel and every further element is assigned clockwise.
      */
     override fun wheelRotationsToRobotVelocity(wheelRadius: Double, vararg rotations: Double) = Vector2(
-            ((rotations[0] - rotations[4] - rotations[2] + rotations[3]) * (wheelRadius / 4)).toFloat(),
-            ((rotations[0] + rotations[4] + rotations[2] + rotations[3]) * (wheelRadius / 4)).toFloat()
+            ((rotations[0] - rotations[4] - rotations[2] + rotations[3]) * (wheelRadius / 4) * (2 * PI)).toFloat(),
+            ((rotations[0] + rotations[4] + rotations[2] + rotations[3]) * (wheelRadius / 4) * (2 * PI)).toFloat()
     )
 
     override fun robotVelocityToWheelRotations(wheelRadius: Double, linearVelocity: Vector2): List<Double> =
@@ -128,3 +128,10 @@ data class MecanumKinematicsComponent(
                     (1 / wheelRadius) * (-(wheelBaseLength + wheelBaseWidth) * rotationalVelocity) * (2 * PI)
             )
 }
+
+/**
+ * Simple container for a [DrivetrainKinematics].
+ */
+data class KinematicComponent(
+        val kinematics: DrivetrainKinematics
+) : Component

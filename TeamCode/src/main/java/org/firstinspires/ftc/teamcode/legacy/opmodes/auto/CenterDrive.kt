@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.legacy.opmodes.auto
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.teamcode.legacy.lib.*
 import org.firstinspires.ftc.teamcode.legacy.subsystems.MecanumDrivetrain
 
+@Disabled
 @Autonomous(name = "Center Drive", group = "bad")
 class CenterDrive: LinearOpMode() {
 

@@ -12,13 +12,13 @@ import com.qualcomm.robotcore.hardware.Servo
  *
  *  @property power the current power of the motor
  *  @property direction the current direction of the motor
- *  @property brakeBehavior the current ZeroPowerBehavior (i.e. what the motor does when given zero power: resist against movement -> BRAKE, do not resist -> FLOAT
+ *  @property zeroPowerBehavior the current ZeroPowerBehavior (i.e. what the motor does when given zero power: resist against movement -> BRAKE, do not resist -> FLOAT
  */
 data class DcMotorComponent(
         override val deviceString: String,
         var power: Double = 0.0,
         var direction: DcMotorSimple.Direction = DcMotorSimple.Direction.FORWARD,
-        var brakeBehavior: DcMotor.ZeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        var zeroPowerBehavior: DcMotor.ZeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 ) : HardwareComponent
 
 /**
@@ -28,6 +28,7 @@ data class DcMotorComponent(
  * @property targetPosition target position of encoder
  * @property currentVelocity current velocity (in encoder ticks per second) of encoder
  * @property targetVelocity target velocity (in encoder ticks per second) of encoder
+ * @property runToTargetPosition should this motor move towards target position.
  * @property direction direction of encoder (TODO: Figure out if encoder values are affected by directionality, pretty dang certain.)
  * @property TICKS_PER_REV how many ticks it takes for the encoder to go one full revolution (is Double because some motors have whack gear ratios)
  */
@@ -37,6 +38,7 @@ data class EncoderComponent(
         var targetPosition: Int = 0,
         var currentVelocity: Double = 0.0,
         var targetVelocity: Double = 0.0,
+        var runToTargetPosition: Boolean = false,
         var direction: DcMotorSimple.Direction = DcMotorSimple.Direction.FORWARD,
         var TICKS_PER_REV: Double = 0.0
 ) : HardwareComponent
