@@ -29,3 +29,6 @@ fun Engine.addSystemsFromList(systems: List<EntitySystem>, priority: Int = 69) {
 fun Engine.addEntitiesFromList(entities: List<Entity>) {
     for (entity in entities) addEntity(entity)
 }
+
+
+

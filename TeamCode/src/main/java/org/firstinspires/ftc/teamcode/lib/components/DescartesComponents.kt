@@ -2,19 +2,19 @@ package org.firstinspires.ftc.teamcode.lib.components
 
 import com.badlogic.ashley.core.Component
 import com.badlogic.ashley.core.Entity
-import com.badlogic.gdx.ai.steer.utils.paths.LinePath
 import com.badlogic.gdx.math.CatmullRomSpline
+import com.badlogic.gdx.math.Path
 import com.badlogic.gdx.math.Vector2
 
 /**
  * Defines a position and rotation in field coordinates.
  *
- * @property position Vector2 describing position based on field coordinates, where (0,0) equals middle of field with Y-axis positive direction moving away from audience (shown in Game Manual) and X-axis positive direction moving towards Red Alliance station, with the measurement unit is Inches.
- * @property rotation Degree value describing rotation of [Entity] where the rotation is determined by the angle between Xe and Xf, with positive being a clockwise direction.
+ * @property position Vector2 describing position based on field coordinates, where (0,0) equals middle of field with Y-axis positive direction moving away from audience (shown in Game Manual) and X-axis positive direction moving towards Blue Alliance station, with the measurement unit is Inches.
+ * @property rotation Degree value describing rotation of [Entity] where the rotation is determined by the angle between Xe and Xf, with positive being a counter-clockwise direction.
  */
 
 data class TransformComponent(
-        val position: Vector2 = Vector2.Zero,
+        val position: Vector2 = Vector2(0f, 0f),
         var rotation: Double = 0.0
 ) : Component
 
@@ -54,15 +54,14 @@ data class LocalizedMovementComponent(
 ) : Component
 
 /**
- * Simple container for a [CatmullRomSpline] (preferred for hitting all control points) path in field coordinates.
+ * Simple container for a [Path] in field coordinates.
  */
-data class SplinePathComponement(
-        val spline: CatmullRomSpline<Vector2>
+class PathComponent(
+        var path: Path<Vector2> = CatmullRomSpline<Vector2>()
 ) : Component
 
-/**
- *
- */
-data class LinearPathComponent(
-        val points: LinePath<Vector2>
+data class PurePursuitComponent(
+        val speedScalar: Double = 1.0,
+        val lookAheadRadius: Double = 12.0,
+        val increaseFailSafe: Boolean = true
 ) : Component

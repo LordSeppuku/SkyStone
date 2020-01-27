@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.legacy.opmodes.auto
+package org.firstinspires.ftc.teamcode.legacy.opmodes.auto.sucky
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.Disabled
@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.legacy.subsystems.MecanumDrivetrain
 @Autonomous(name = "Center Drive", group = "bad")
 class CenterDrive: LinearOpMode() {
 
-    val drivetrain: MecanumDrivetrain = MecanumDrivetrain()
+    val drivetrain: MecanumDrivetrain = MecanumDrivetrain(hardwareMap)
     val runtime: ElapsedTime = ElapsedTime()
 
     val leftCommands = listOf(
@@ -24,7 +24,7 @@ class CenterDrive: LinearOpMode() {
 
     override fun runOpMode() {
 
-        drivetrain.init(hardwareMap)
+        drivetrain.init()
         val commands = selectionPrompt()
 
         if (isStopRequested) return

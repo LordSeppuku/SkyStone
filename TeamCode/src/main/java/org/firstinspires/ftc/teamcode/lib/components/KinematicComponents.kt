@@ -72,44 +72,53 @@ interface DrivetrainKinematics {
      */
     fun rotationalVelocityToWheelRotations(wheelComponent: WheelComponent, rotationalVelocity: Double) = rotationalVelocityToWheelRotations(wheelComponent.radius, rotationalVelocity)
 
-    companion object {
 
-        fun ticksToWheelRotations(wheelComponent: WheelComponent, encoderComponent: EncoderComponent) = ticksToWheelRotations(encoderComponent.currentPosition, wheelComponent.gearRatio, encoderComponent.TICKS_PER_REV)
+    fun ticksToWheelRotations(wheelComponent: WheelComponent, encoderComponent: EncoderComponent) = ticksToWheelRotations(encoderComponent.currentPosition, wheelComponent.gearRatio, encoderComponent.TICKS_PER_REV)
 
-        /**
-         * Convert encoder ticks to wheel rotations.
-         *
-         * @param ticks current ticks from encoder
-         * @param gearRatio gear ratio based on wheel gear over drive gear
-         */
-        fun ticksToWheelRotations(ticks: Int, gearRatio: Double = 1.0, ticksPerRevolution: Double) = (ticks / ticksPerRevolution) * gearRatio
+    /**
+     * Convert encoder ticks to wheel rotations.
+     *
+     * @param ticks current ticks from encoder
+     * @param gearRatio gear ratio based on wheel gear to drive gear
+     */
+    fun ticksToWheelRotations(ticks: Int, gearRatio: Double = 1.0, ticksPerRevolution: Double) = (ticks / ticksPerRevolution) * gearRatio
 
-        fun wheelRotationsToTicks(wheelRotations: Double, wheelComponent: WheelComponent, encoderComponent: EncoderComponent) = wheelRotationsToTicks(wheelRotations, wheelComponent.gearRatio, encoderComponent.TICKS_PER_REV)
-        fun wheelRotationsToTicks(wheelRotations: Double, gearRatio: Double, ticksPerRevolution: Double) = (wheelRotations / gearRatio) * ticksPerRevolution
+    fun wheelRotationsToTicks(wheelRotations: Double, wheelComponent: WheelComponent, encoderComponent: EncoderComponent) = wheelRotationsToTicks(wheelRotations, wheelComponent.gearRatio, encoderComponent.TICKS_PER_REV)
+    fun wheelRotationsToTicks(wheelRotations: Double, gearRatio: Double, ticksPerRevolution: Double) = (wheelRotations / gearRatio) * ticksPerRevolution
 
-        fun robotVelocityToLinearVelocity(movementComponent: MovementComponent, transformComponent: TransformComponent) = movementComponent.velocity.rotate(transformComponent.rotation.toFloat())
-        fun robotVelocityToLinearVelocity(robotVelocity: Vector2, robotHeading: Double) = robotVelocity.rotate(robotHeading.toFloat())
-        fun robotVelocityToLinearVelocity(robotX: Double, robotY: Double, robotHeading: Double = 0.0) = Vector2(robotX.toFloat(), robotY.toFloat()).rotate(robotHeading.toFloat())
-    }
+    fun robotVelocityToLinearVelocity(localizedMovementComponent: LocalizedMovementComponent, transformComponent: TransformComponent) = localizedMovementComponent.velocity.rotate(-transformComponent.rotation.toFloat())
+    fun robotVelocityToLinearVelocity(robotVelocity: Vector2, robotHeading: Double) = robotVelocity.rotate(-robotHeading.toFloat())
+    fun robotVelocityToLinearVelocity(robotX: Double, robotY: Double, robotHeading: Double = 0.0) = Vector2(robotX.toFloat(), robotY.toFloat()).rotate(-robotHeading.toFloat())
+
+    fun linearVelocityToRobotVelocity(movementComponent: MovementComponent, transformComponent: TransformComponent) = movementComponent.velocity.rotate(transformComponent.rotation.toFloat())
+    fun linearVelocityToRobotVelocity(linearVelocity: Vector2, robotHeading: Double = 0.0) = linearVelocity.rotate(robotHeading.toFloat())
+    fun linearVelocityToRobotVelocity(linearX: Double, linearY: Double, robotHeading: Double = 0.0) = Vector2(linearX.toFloat(), linearY.toFloat()).rotate(robotHeading.toFloat())
+
 }
 
 @Serializable
 data class MecanumKinematics(
-        val wheelBaseLength: Double,
-        val wheelBaseWidth: Double
+        var wheelBaseLength: Double = 0.0,
+        var wheelBaseWidth: Double = 0.0
 ) : DrivetrainKinematics {
+
+    val FL = 0
+    val FR = 1
+    val BL = 2
+    val BR = 3
+
     /**
      * @param rotations assumes that first element is Front-Left Wheel and every further element is assigned clockwise.
      */
     override fun wheelRotationsToRobotVelocity(wheelRadius: Double, vararg rotations: Double) = Vector2(
-            ((rotations[0] - rotations[4] - rotations[2] + rotations[3]) * (wheelRadius / 4) * (2 * PI)).toFloat(),
-            ((rotations[0] + rotations[4] + rotations[2] + rotations[3]) * (wheelRadius / 4) * (2 * PI)).toFloat()
+            ((-rotations[FL] + rotations[FR] + rotations[BL] - rotations[BR]) * (wheelRadius / 4) * (2 * PI)).toFloat(),
+            ((rotations[FL] + rotations[FR] + rotations[BL] + rotations[BR]) * (wheelRadius / 4) * (2 * PI)).toFloat()
     )
 
     override fun robotVelocityToWheelRotations(wheelRadius: Double, linearVelocity: Vector2): List<Double> =
             listOf(
-                    (1 / wheelRadius) * (linearVelocity.y + linearVelocity.x),
                     (1 / wheelRadius) * (linearVelocity.y - linearVelocity.x),
+                    (1 / wheelRadius) * (linearVelocity.y + linearVelocity.x),
                     (1 / wheelRadius) * (linearVelocity.y - linearVelocity.x),
                     (1 / wheelRadius) * (linearVelocity.y + linearVelocity.x)
             )
@@ -118,14 +127,15 @@ data class MecanumKinematics(
      * @param rotations assumes that first element is Front-Left Wheel and every further element is assigned clockwise.
      */
     override fun wheelRotationsToRotationalVelocity(wheelRadius: Double, vararg rotations: Double) =
-            ((rotations[0] - rotations[4] + rotations[2] - rotations[3]) * (2 * PI) * (wheelRadius / (4.0 * (wheelBaseLength + wheelBaseWidth))))
+            ((-rotations[FL] + rotations[FR] - rotations[BL] + rotations[BR]) * (2 * PI) * (wheelRadius / (4.0 * (wheelBaseLength + wheelBaseWidth))))
 
     override fun rotationalVelocityToWheelRotations(wheelRadius: Double, rotationalVelocity: Double): List<Double> =
             listOf(
-                    (1 / wheelRadius) * ((wheelBaseLength + wheelBaseWidth) * rotationalVelocity) * (2 * PI),
                     (1 / wheelRadius) * (-(wheelBaseLength + wheelBaseWidth) * rotationalVelocity) * (2 * PI),
                     (1 / wheelRadius) * ((wheelBaseLength + wheelBaseWidth) * rotationalVelocity) * (2 * PI),
+                    (1 / wheelRadius) * ((wheelBaseLength + wheelBaseWidth) * rotationalVelocity) * (2 * PI),
                     (1 / wheelRadius) * (-(wheelBaseLength + wheelBaseWidth) * rotationalVelocity) * (2 * PI)
+
             )
 }
 
@@ -133,5 +143,5 @@ data class MecanumKinematics(
  * Simple container for a [DrivetrainKinematics].
  */
 data class KinematicComponent(
-        val kinematics: DrivetrainKinematics
+        var kinematics: DrivetrainKinematics = MecanumKinematics()
 ) : Component

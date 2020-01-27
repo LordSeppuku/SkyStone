@@ -1,13 +1,11 @@
 package org.firstinspires.ftc.teamcode.legacy.opmodes.test
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.teamcode.legacy.lib.Button
 import org.firstinspires.ftc.teamcode.legacy.lib.ButtonState
 
-@Disabled
 @TeleOp(name = "Servo Test", group = "Test")
 class ServoTest : LinearOpMode() {
     override fun runOpMode() {

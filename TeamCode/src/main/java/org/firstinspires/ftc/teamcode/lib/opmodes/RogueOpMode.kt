@@ -3,8 +3,9 @@ package org.firstinspires.ftc.teamcode.lib.opmodes
 import com.badlogic.ashley.core.Engine
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.EntitySystem
+import com.badlogic.ashley.signals.Signal
 import com.qualcomm.robotcore.util.ElapsedTime
-import org.firstinspires.ftc.teamcode.lib.addEntitiesFromList
+import org.firstinspires.ftc.teamcode.lib.OpModeSingleton
 import org.firstinspires.ftc.teamcode.lib.addSystemsFromList
 import org.firstinspires.ftc.teamcode.lib.components.InternalHardwareMapComponent
 import org.firstinspires.ftc.teamcode.lib.factory.EntityFactory
@@ -19,6 +20,8 @@ import org.firstinspires.ftc.teamcode.lib.systems.TelemetryAssignmentSystem
  * Use [AdvanceRogueOpMode] for an OpMode that only provides and [Engine] instance.
  */
 open class RogueOpMode : AdvanceRogueOpMode() {
+
+    val opModeState = Signal<OpModeSingleton.OpModeState>()
 
     /**
      * Use [EntityFactory] to create entities with components based on your own logic.
@@ -39,7 +42,7 @@ open class RogueOpMode : AdvanceRogueOpMode() {
 
     /**
      * Initialize all Enactor systems required for OpMode here in this list.
-     * Any systems listed here will have a priority of 7.
+     * Any systems listed here will have a priority of 6.
      */
     open val userEnactors: List<EntitySystem> = listOf()
 
@@ -77,18 +80,20 @@ open class RogueOpMode : AdvanceRogueOpMode() {
 
     override fun runOpMode() {
 
+        opModeState.dispatch(OpModeSingleton.OpModeState.INIT)
+
         // Why add on its own instead of in with all the defaults. Just cuz'.
         engine.addEntity(Entity().add(
                 InternalHardwareMapComponent(hardwareMap)
         ))
 
-        engine.addEntitiesFromList(defaultEntityFactories.map {
-            it.produce()
-        }.flatten())
+        defaultEntityFactories.map {
+            it.produce(engine)
+        }
 
-        engine.addEntitiesFromList(userEntityFactories.map {
-            it.produce()
-        }.flatten())
+        userEntityFactories.map {
+            it.produce(engine)
+        }
 
         // Add telemetry assignment system and assign telemetry lines NOW.
         engine.addSystem(TelemetryAssignmentSystem(telemetry))
@@ -98,10 +103,14 @@ open class RogueOpMode : AdvanceRogueOpMode() {
         engine.addSystemsFromList(userPollers, 2)
         engine.addSystemsFromList(defaultLogic, 4)
         engine.addSystemsFromList(userLogic, 5)
-        engine.addSystemsFromList(defaultEnactors, 6)
-        engine.addSystemsFromList(userEnactors, 7)
+        engine.addSystemsFromList(defaultEnactors, 7)
+        engine.addSystemsFromList(userEnactors, 6)
 
         preLoopCode()
+
+        waitForStart()
+
+        opModeState.dispatch(OpModeSingleton.OpModeState.START)
 
         telemetry.clear()
         deltaTime.reset()
@@ -113,6 +122,8 @@ open class RogueOpMode : AdvanceRogueOpMode() {
             telemetry.update() // Why update here? If we put it in a system, it is vulnerable to being "mucked up" due to priority shenanigans.
             deltaTime.reset()
         }
+
+        opModeState.dispatch(OpModeSingleton.OpModeState.STOP)
 
         postLoopCode()
 

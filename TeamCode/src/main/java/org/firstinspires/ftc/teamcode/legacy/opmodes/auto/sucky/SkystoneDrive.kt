@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.legacy.opmodes.auto
+package org.firstinspires.ftc.teamcode.legacy.opmodes.auto.sucky
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.Disabled
@@ -16,16 +16,16 @@ import org.firstinspires.ftc.teamcode.legacy.subsystems.Vision
 class SkystoneDrive : LinearOpMode() {
 
     val drivetrain: MecanumDrivetrain by lazy {
-        MecanumDrivetrain()
+        MecanumDrivetrain(hardwareMap)
     }
     val vision: Vision by lazy {
         Vision(hardwareMap)
     }
     val intake: Intake by lazy {
-        Intake()
+        Intake(hardwareMap)
     }
     val arm: Arm by lazy {
-        Arm()
+        Arm(hardwareMap)
     }
     val runtime: ElapsedTime = ElapsedTime()
 
@@ -95,9 +95,9 @@ class SkystoneDrive : LinearOpMode() {
 
     override fun runOpMode() {
 
-        drivetrain.init(hardwareMap)
-        intake.init(hardwareMap)
-        arm.init(hardwareMap)
+        drivetrain.init()
+        intake.init()
+        arm.init()
         vision.init()
         val commands = selectionPrompt()
 

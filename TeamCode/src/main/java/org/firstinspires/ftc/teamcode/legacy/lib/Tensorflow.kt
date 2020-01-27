@@ -26,7 +26,7 @@ class Tensorflow(hwMap: HardwareMap) {
         tfod = ClassFactory.getInstance().createTFObjectDetector(
                 TFObjectDetector.Parameters(hwMap.appContext.resources.getIdentifier(
                         "tfodMonitorViewId", "id", hwMap.appContext.packageName)).apply {
-                    minimumConfidence = 0.8
+                    minimumConfidence = 0.70
                 },
                 ClassFactory.getInstance().createVuforia(VuforiaLocalizer.Parameters().apply {
                     vuforiaLicenseKey = VUFORIA_KEY
@@ -39,7 +39,7 @@ class Tensorflow(hwMap: HardwareMap) {
 
     fun acquireRecognitions(): MutableList<Recognition>? {
         start()
-        return tfod.updatedRecognitions
+        return tfod.recognitions
     }
 
     fun start() {

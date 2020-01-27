@@ -13,3 +13,7 @@ data class WheelComponent(
         }
     }
 }
+
+data class DrivetrainMotorComponent(
+        val position: Int = 0
+) : Component

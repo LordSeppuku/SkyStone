@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.lib.components
 
 import com.badlogic.ashley.core.Component
+import com.badlogic.ashley.core.Entity
 import com.qualcomm.robotcore.hardware.HardwareMap
 import kotlinx.serialization.Serializable
 import org.firstinspires.ftc.robotcore.external.Func
@@ -34,8 +35,12 @@ data class StateComponent(
  * @property deviceString name of hardware device in configuration file
  */
 interface HardwareComponent : Component {
-    val deviceString: String
+    var deviceString: String
 }
+
+data class ParentEntityComponent(
+        val parent: Entity
+) : Component
 
 /**
  * Encapsulates a [Telemetry] instance akin to [InternalHardwareMapComponent], also shouldn't be used in userland.

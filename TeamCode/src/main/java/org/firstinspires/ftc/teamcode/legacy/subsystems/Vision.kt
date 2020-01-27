@@ -15,11 +15,11 @@ class Vision(private val hwMap: HardwareMap) {
 
     fun init() = tensorflow.start()
 
-    fun discern(): SkystonePosition = with(tensorflow.acquireRecognitions()) {
+    fun discern(): SkystonePosition = with(tensorflow.acquireRecognitions()?.filter { ((it.label == "Skystone") || (it.label == "Stone")) }) {
         if (this?.size == 2) {
 
-            var skystoneX: Float = (-1).toFloat()
-            var stone1X: Float = (-1).toFloat()
+            var skystoneX: Float = -1f
+            var stone1X: Float = -1f
 
             for (recognition in this) {
                 when (recognition.label) {
@@ -27,19 +27,19 @@ class Vision(private val hwMap: HardwareMap) {
                         skystoneX = recognition.left
                     }
                     "Stone" -> {
-                        if (stone1X == -1.toFloat()) stone1X = recognition.left
+                        if (stone1X == -1f) stone1X = recognition.left
                     }
                 }
             }
 
             if (skystoneX < stone1X) return SkystonePosition.LEFT
-            if (skystoneX == -1.toFloat()) return SkystonePosition.RIGHT
-            if (skystoneX > stone1X) return SkystonePosition.CENTER
+            else if (skystoneX > stone1X) return SkystonePosition.CENTER
+            else if (skystoneX == -1f) return SkystonePosition.RIGHT
         } else if (this?.size == 3) {
 
-            var skystoneX: Float = (-1).toFloat()
-            var stone1X: Float = (-1).toFloat()
-            var stone2X: Float = -1.0f
+            var skystoneX: Float = -1f
+            var stone1X: Float = -1f
+            var stone2X: Float = -1f
 
             for (recognition in this) {
                 when (recognition.label) {
@@ -47,15 +47,15 @@ class Vision(private val hwMap: HardwareMap) {
                         skystoneX = recognition.left
                     }
                     "Stone" -> {
-                        if (stone1X == -1.toFloat()) stone1X = recognition.left
+                        if (stone1X == -1f) stone1X = recognition.left
                         else stone2X = recognition.left
                     }
                 }
             }
 
             if (skystoneX < stone1X) return SkystonePosition.LEFT
-            if (skystoneX == -1.toFloat() || skystoneX > stone2X) return SkystonePosition.RIGHT
-            if (skystoneX > stone1X || stone2X < skystoneX) return SkystonePosition.CENTER
+            else if (skystoneX == -1f || skystoneX > stone2X) return SkystonePosition.RIGHT
+            else if (skystoneX > stone1X || stone2X < skystoneX) return SkystonePosition.CENTER
         }
 
         SkystonePosition.UNKNOWN

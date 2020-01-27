@@ -5,17 +5,23 @@ import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.teamcode.legacy.lib.Button
 import org.firstinspires.ftc.teamcode.legacy.lib.ButtonState
 
-class Intake {
+class Intake(private val hwMap: HardwareMap) {
 
-    private lateinit var hardwareMap: HardwareMap
+    private val leftServo: Servo by lazy {
+        hwMap.servo["inSrvL"]
+    }
 
-    private lateinit var leftServo: Servo
+    private val rightServo: Servo by lazy {
+        hwMap.servo["inSrvR"]
+    }
 
-    private lateinit var rightServo: Servo
+    private val leftMotor: DcMotor by lazy {
+        hwMap.dcMotor["inDcL"]
+    }
 
-    private lateinit var leftMotor: DcMotor
-
-    private lateinit var rightMotor: DcMotor
+    private val rightMotor: DcMotor by lazy {
+        hwMap.dcMotor["inDcR"]
+    }
 
     private val intake = Button()
     private val exhaust = Button()
@@ -25,15 +31,7 @@ class Intake {
     var state: State = State.IN
         private set
 
-    fun init(hwMap: HardwareMap) {
-        this.hardwareMap = hwMap
-
-        leftServo = hardwareMap.servo["inSrvL"]
-        rightServo = hardwareMap.servo["inSrvR"]
-
-        leftMotor = hardwareMap.dcMotor["inDcL"]
-        rightMotor = hardwareMap.dcMotor["inDcR"]
-
+    fun init() {
         rightMotor.direction = DcMotorSimple.Direction.REVERSE
 
         leftServo.direction = Servo.Direction.REVERSE

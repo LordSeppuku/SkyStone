@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.hardware.Servo
  *  @property zeroPowerBehavior the current ZeroPowerBehavior (i.e. what the motor does when given zero power: resist against movement -> BRAKE, do not resist -> FLOAT
  */
 data class DcMotorComponent(
-        override val deviceString: String,
+        override var deviceString: String,
         var power: Double = 0.0,
         var direction: DcMotorSimple.Direction = DcMotorSimple.Direction.FORWARD,
         var zeroPowerBehavior: DcMotor.ZeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
@@ -33,7 +33,7 @@ data class DcMotorComponent(
  * @property TICKS_PER_REV how many ticks it takes for the encoder to go one full revolution (is Double because some motors have whack gear ratios)
  */
 data class EncoderComponent(
-        override val deviceString: String,
+        override var deviceString: String,
         var currentPosition: Int = 0,
         var targetPosition: Int = 0,
         var currentVelocity: Double = 0.0,
@@ -50,7 +50,7 @@ data class EncoderComponent(
  * @property direction current direction of servo
  */
 data class ServoComponent(
-        override val deviceString: String,
+        override var deviceString: String,
         var position: Double = 0.0,
         var direction: Servo.Direction = Servo.Direction.FORWARD
 ) : HardwareComponent
@@ -62,7 +62,7 @@ data class ServoComponent(
  * @property direction current direction of servo
  */
 data class CRServoComponent(
-        override val deviceString: String,
+        override var deviceString: String,
         var power: Double = 0.0,
         var direction: DcMotorSimple.Direction = DcMotorSimple.Direction.FORWARD
 ) : HardwareComponent

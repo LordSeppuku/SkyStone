@@ -15,9 +15,7 @@ import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sin
 
-class MecanumDrivetrain {
-
-    private lateinit var hardwareMap: HardwareMap
+class MecanumDrivetrain(private val hardwareMap: HardwareMap) {
 
     companion object {
         val WHEEL_RADIUS = Distance(50.0, DistanceUnit.MM)
@@ -62,25 +60,20 @@ class MecanumDrivetrain {
     private val BR: DcMotorEx
         get() = hardwareMap.dcMotor.get("br") as DcMotorEx
 
-    fun init(hardwareMap: HardwareMap) {
+    fun init() {
         if (driveStatus != DriveStatus.UNINIT) return
-
-        this.hardwareMap = hardwareMap
-        FL.direction = DcMotorSimple.Direction.REVERSE
-        /*
         FR.direction = DcMotorSimple.Direction.REVERSE
         BR.direction = DcMotorSimple.Direction.REVERSE
         BL.direction = DcMotorSimple.Direction.REVERSE
-         */
-        changeEncoderMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER)
+        //changeEncoderMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER)
 
         driveStatus = DriveStatus.INIT
 
-        changeEncoderMode(DcMotor.RunMode.RUN_USING_ENCODER)
+        //changeEncoderMode(DcMotor.RunMode.RUN_USING_ENCODER)
     }
 
-    fun init(hardwareMap: HardwareMap, fieldPosition: Pose) {
-        init(hardwareMap)
+    fun init(fieldPosition: Pose) {
+        init()
         X = fieldPosition.x
         Y = fieldPosition.y
         Theta = fieldPosition.w
@@ -98,7 +91,7 @@ class MecanumDrivetrain {
     fun arcadeDrive(lateral: Double, horizontal: Double, c: Double) {
 
         if (driveStatus != DriveStatus.DIRECT_CONTROL) {
-            changeEncoderMode(DcMotor.RunMode.RUN_USING_ENCODER)
+            changeEncoderMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER)
             driveStatus = DriveStatus.DIRECT_CONTROL
         }
 
@@ -199,7 +192,7 @@ class MecanumDrivetrain {
                 BR.power = power
             }
 
-            while (FL.isBusy
+            while ((FL.isBusy || FR.isBusy || BL.isBusy || BR.isBusy)
                     && activeOpMode()) {
                 busyAction()
             }

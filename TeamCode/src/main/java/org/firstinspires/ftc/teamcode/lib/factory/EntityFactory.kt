@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.lib.factory
 
-import com.badlogic.ashley.core.Entity
+import com.badlogic.ashley.core.Engine
+import ktx.ashley.EngineEntity
+import ktx.ashley.entity
 
-typealias EntityCreator = (iteration: Int) -> Entity
+typealias EntityCreator = (iteration: Int) -> EngineEntity.() -> Unit
 
 /**
  * Sealed class hierarchy providing easy peasy handling of the [EntityFactory.times] lambda.
@@ -36,16 +38,15 @@ data class LambdaProducer(override val produce: () -> Int) : IntProducer()
  * @property creator simple lambda that creates an entity based on which entity.
  */
 data class EntityFactory(
-        val times: IntProducer = NoProducer(1),
+        val times: IntProducer = NoProducer(0),
         val creator: EntityCreator
 ) {
 
     /**
      * Creates [times] amount of entities based on [creator] lambda in a [List] for further use.
      */
-    fun produce(): List<Entity> {
-        val list = mutableListOf<Entity>()
-        for (i in 1..times.produce()) list.add(creator(i))
-        return list.toList()
+    fun produce(engine: Engine) {
+        for (i in 0 until times.produce()) engine.entity(creator(i))
     }
+
 }

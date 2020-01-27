@@ -4,31 +4,36 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.util.ElapsedTime
-import org.firstinspires.ftc.teamcode.legacy.subsystems.*
+import org.firstinspires.ftc.teamcode.legacy.subsystems.Arm
+import org.firstinspires.ftc.teamcode.legacy.subsystems.Intake
+import org.firstinspires.ftc.teamcode.legacy.subsystems.MecanumDrivetrain
+import org.firstinspires.ftc.teamcode.legacy.subsystems.Vision
 import kotlin.math.pow
 
 @Disabled
 @TeleOp(name = "Vision Drive", group = "Test")
 class VisionDrive : LinearOpMode() {
 
-    private val drivetrain = MecanumDrivetrain()
-    private val arm = Arm()
-    private val intake = Intake()
-    private val runtime = ElapsedTime()
-    private val imu by lazy {
-        IMU(hardwareMap)
+    private val drivetrain by lazy {
+        MecanumDrivetrain(hardwareMap)
+    }
+    private val arm by lazy {
+        Arm(hardwareMap)
+    }
+    private val intake by lazy {
+        Intake(hardwareMap)
     }
     private val vision by lazy {
         Vision(hardwareMap)
     }
+    private val runtime = ElapsedTime()
 
     override fun runOpMode() {
 
-        drivetrain.init(hardwareMap)
-        arm.init(hardwareMap)
-        intake.init(hardwareMap)
+        drivetrain.init()
+        arm.init()
+        intake.init()
         vision.init()
-        imu.init()
 
         waitForStart()
 
@@ -47,15 +52,6 @@ class VisionDrive : LinearOpMode() {
 
                 arm.update(gamepad1)
                 intake.update(gamepad1, telemetry)
-            }
-
-            drivetrain.run {
-                localization(imu)
-                telemetry.addLine().run {
-                    addData("IMU Theta", Theta)
-                    addData("Localization X", X)
-                    addData("Localization Y", Y)
-                }
             }
 
             telemetry.addLine(vision.discern().toString())
