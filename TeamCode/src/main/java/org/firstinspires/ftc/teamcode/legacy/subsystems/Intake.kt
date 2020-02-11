@@ -34,66 +34,58 @@ class Intake(private val hwMap: HardwareMap) {
     fun init() {
         rightMotor.direction = DcMotorSimple.Direction.REVERSE
 
-        leftServo.direction = Servo.Direction.REVERSE
+        rightServo.direction = Servo.Direction.REVERSE
 
-        leftServo.position = 0.6
-        rightServo.position = 0.6
+        leftServo.position = 0.0
+        rightServo.position = 0.0
     }
 
     fun update(gamepad: Gamepad, telemetry: Telemetry) {
         with(gamepad) {
             if (intake.update(b) != ButtonState.NOT_PRESSED) {
-                leftMotor.power = -1.0
-                rightMotor.power = -1.0
-
+                succ()
                 telemetry.addLine("C O N S U M E")
             } else if (exhaust.update(a) != ButtonState.NOT_PRESSED) {
-                leftMotor.power = 1.0
-                rightMotor.power = 1.0
-
+                vomit()
                 telemetry.addLine("V O M I T")
-            } else {
-                leftMotor.power = 0.0
-                rightMotor.power = 0.0
-            }
+            } else
+                rest()
+
 
             if (popOff.update(x) != ButtonState.NOT_PRESSED) {
-                leftServo.position = 0.9
-                rightServo.position = 0.9
-
+                popOff()
                 telemetry.addLine("P O P P I N  O F F")
             } else if (unPop.update(y) != ButtonState.NOT_PRESSED) {
-                leftServo.position = 0.6
-                rightServo.position = 0.6
-
+                popIn()
                 telemetry.addLine("U N P O P P I N")
             } else {
             }
         }
     }
 
-    fun update(gamepad: Gamepad) {
-        with(gamepad) {
-            if (intake.update(b) != ButtonState.NOT_PRESSED) {
-                leftMotor.power = -1.0
-                rightMotor.power = -1.0
-            } else if (exhaust.update(a) != ButtonState.NOT_PRESSED) {
-                leftMotor.power = 1.0
-                rightMotor.power = 1.0
-            } else {
-                leftMotor.power = 0.0
-                rightMotor.power = 0.0
-            }
+    fun popOff() {
+        leftServo.position = 0.2
+        rightServo.position = 0.2
+    }
 
-            if (popOff.update(x) != ButtonState.NOT_PRESSED) {
-                leftServo.position = 0.9
-                rightServo.position = 0.9
-            } else if (unPop.update(y) != ButtonState.NOT_PRESSED) {
-                leftServo.position = 0.6
-                rightServo.position = 0.6
-            } else {
-            }
-        }
+    fun popIn() {
+        leftServo.position = 0.0
+        rightServo.position = 0.0
+    }
+
+    fun rest() {
+        leftMotor.power = 0.0
+        rightMotor.power = 0.0
+    }
+
+    fun succ() {
+        leftMotor.power = 1.0
+        rightMotor.power = 1.0
+    }
+
+    fun vomit() {
+        leftMotor.power = -0.5
+        rightMotor.power = -0.5
     }
 
     enum class State {

@@ -6,6 +6,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector
+import java.lang.Thread.sleep
 
 class Tensorflow(hwMap: HardwareMap) {
 
@@ -13,6 +14,11 @@ class Tensorflow(hwMap: HardwareMap) {
     private val TFOD_MODEL_ASSET = "Skystone.tflite"
     val LABEL_FIRST_ELEMENT = "Stone"
     val LABEL_SECOND_ELEMENT = "Skystone"
+
+
+    val cameraName by lazy {
+        hwMap["Webcam 1"] as WebcamName
+    }
 
     private val tfod: TFObjectDetector
     var isActive = false
@@ -30,9 +36,10 @@ class Tensorflow(hwMap: HardwareMap) {
                 },
                 ClassFactory.getInstance().createVuforia(VuforiaLocalizer.Parameters().apply {
                     vuforiaLicenseKey = VUFORIA_KEY
-                    cameraName = hwMap.get(WebcamName::class.java, "Webcam 1")
+                    this.cameraName = this@Tensorflow.cameraName
                 })
         ).also {
+            sleep(750)
             it.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT)
         }
     }

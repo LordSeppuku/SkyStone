@@ -104,8 +104,8 @@ data class MecanumKinematics(
 
     val FL = 0
     val FR = 1
-    val BL = 2
-    val BR = 3
+    val BL = 3
+    val BR = 2
 
     /**
      * @param rotations assumes that first element is Front-Left Wheel and every further element is assigned clockwise.

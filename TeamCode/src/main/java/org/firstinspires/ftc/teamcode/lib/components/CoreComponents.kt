@@ -155,6 +155,14 @@ object EmptyTelemetry : Telemetry {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
+    override fun speak(text: String?) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun speak(text: String?, languageCode: String?, countryCode: String?) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     override fun removeLine(line: Telemetry.Line?): Boolean {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }

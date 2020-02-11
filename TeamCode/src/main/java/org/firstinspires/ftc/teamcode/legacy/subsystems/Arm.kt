@@ -23,13 +23,15 @@ class Arm(private val hwMap: HardwareMap) {
     private val clasp = Button()
     private val unclasp = Button()
 
+    val close = 0.65
+    val open = 0.5
+
     fun init() {
         lift.mode = DcMotor.RunMode.RUN_USING_ENCODER
         lift.direction = DcMotorSimple.Direction.REVERSE
         lift.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         arm.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        servo.direction = Servo.Direction.REVERSE
-        servo.position = 0.1
+        servo.position = open
     }
 
     fun update(gamepad: Gamepad) {
@@ -38,9 +40,9 @@ class Arm(private val hwMap: HardwareMap) {
             arm.power = (-left_trigger + right_trigger) * 0.5
 
             if (clasp.update(right_bumper) != ButtonState.NOT_PRESSED) {
-                servo.position = 0.1
+                servo.position = close
             } else if (unclasp.update(left_bumper) != ButtonState.NOT_PRESSED) {
-                servo.position = 0.0
+                servo.position = open
             }
         }
     }

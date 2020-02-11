@@ -40,21 +40,28 @@ class VisionDrive : LinearOpMode() {
         runtime.reset()
 
         while (opModeIsActive()) {
-
             telemetry.clear()
+            drivetrain.localization(runtime.seconds())
+            runtime.reset()
 
             with(gamepad1) {
                 drivetrain.arcadeDrive(
-                        left_stick_y.toDouble().pow(3),
+                        -left_stick_y.toDouble().pow(3),
                         left_stick_x.toDouble().pow(3),
                         right_stick_x.toDouble().pow(3)
                 )
 
                 arm.update(gamepad1)
                 intake.update(gamepad1, telemetry)
+                if (a) telemetry.addLine(vision.averagedAcquisition(::opModeIsActive).toString())
             }
 
             telemetry.addLine(vision.discern().toString())
+            telemetry.addLine().apply {
+                addData("X: ", drivetrain.X.unit.toInches(drivetrain.X.value))
+                addData("Y: ", drivetrain.Y.unit.toInches(drivetrain.Y.value))
+                addData("Theta: ", drivetrain.Theta.unit.toDegrees(drivetrain.Theta.value))
+            }
 
             telemetry.update()
         }
